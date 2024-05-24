@@ -11,18 +11,29 @@ import {
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChatState } from "../context/chatProvider";
+import { io } from "socket.io-client";
 
 const Login = () => {
   const history = useNavigate();
-  const [userData, setUserData] = useState({});
+  const [loginUserData, setLoginUserData] = useState({});
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [confirmshowPassword, setConfirmShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
   const toast = useToast();
-
+  var socket;
+  const {
+    userData,
+    setUserData,
+    setSelectedChat,
+    selectedChat,
+    chats,
+    setChats,
+  } = ChatState();
   const handleUserData = (key, value) => {
-    setUserData({ ...userData, [key]: value });
+    setLoginUserData({ ...loginUserData, [key]: value });
   };
 
   const postImage = (pics) => {};
@@ -36,7 +47,7 @@ const Login = () => {
       };
       const { data } = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/user/login`,
-        userData,
+        loginUserData,
         config
       );
       console.log(data);
@@ -48,8 +59,11 @@ const Login = () => {
         isClosable: true,
       });
       localStorage.setItem("userInfo", JSON.stringify(data.data));
+      setUserData(data.data);
+      socket = io(ENDPOINT);
+      socket.emit("status", data.data);
       setLoading(false);
-      history("/chats");
+      history("/chats", { hit: true });
     } catch (error) {
       setLoading(false);
       toast({
@@ -61,8 +75,8 @@ const Login = () => {
       });
     }
   };
-  console.log("data", userData);
-  console.log(showPassword);
+  // console.log("data", loginUserData);
+  // console.log(showPassword);
   return (
     <VStack spacing={"5px"} color="black">
       <FormControl id="email" isRequired>
@@ -70,7 +84,7 @@ const Login = () => {
         <Input
           id="my-email"
           class="chakra-input css-1cjy4zv"
-          value={userData.email}
+          value={loginUserData.email}
           placeholder="enter your email"
           onChange={(e) => handleUserData("email", e.target.value)}
         />
@@ -81,7 +95,7 @@ const Login = () => {
           <Input
             id="my-password"
             class="chakra-input css-1cjy5zv"
-            value={userData.password}
+            value={loginUserData.password}
             type={showPassword ? "text" : "password"}
             placeholder="enter your password"
             onChange={(e) => handleUserData("password", e.target.value)}
@@ -111,8 +125,8 @@ const Login = () => {
         width="100%"
         style={{ maginTop: 15 }}
         onClick={() => {
-          setUserData({
-            ...userData,
+          setLoginUserData({
+            ...loginUserData,
             email: "guest@example.com",
             password: "123456",
           });

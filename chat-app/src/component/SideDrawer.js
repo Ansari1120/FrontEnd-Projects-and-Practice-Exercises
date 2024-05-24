@@ -31,6 +31,10 @@ import axios from "axios";
 import ChatLoading from "./ChatLoading";
 import UsersList from "./UsersList";
 import { getSender } from "../config/constants";
+import { io } from "socket.io-client";
+
+const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
+var socket;
 
 const SideDrawer = () => {
   const {
@@ -40,9 +44,11 @@ const SideDrawer = () => {
     setChats,
     notifications,
     setNotifications,
+    triggerRenderer,
+    setTriggerRenderer,
   } = ChatState();
   const history = useNavigate();
-  console.log("user", userData);
+  // console.log("user", userData);
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -50,6 +56,8 @@ const SideDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const handleLogout = async () => {
+    socket = io(ENDPOINT);
+    socket.emit("setup-off", userData);
     localStorage.removeItem("userInfo");
     history("/");
   };
@@ -113,6 +121,7 @@ const SideDrawer = () => {
       setLoadingChat(false);
       console.log(data);
       setSelectedChat(data.data);
+      setTriggerRenderer((prev) => !prev);
       onClose();
     } catch (error) {
       setLoadingChat(false);
@@ -188,7 +197,6 @@ const SideDrawer = () => {
                       )}`}
                 </MenuItem>
               ))}
-              <MenuItem>yooo</MenuItem>
             </MenuList>
           </Menu>
           <Menu>
@@ -230,9 +238,9 @@ const SideDrawer = () => {
             {loading ? (
               <ChatLoading />
             ) : (
-              searchResults?.map((user) => (
+              searchResults?.map((user, index) => (
                 <UsersList
-                  key={user._id}
+                  key={index}
                   user={user}
                   handleAccessUser={() => handleAccessUser(user._id)}
                 />
