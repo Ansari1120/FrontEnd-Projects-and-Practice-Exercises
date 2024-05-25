@@ -12,7 +12,6 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChatState } from "../context/chatProvider";
-import { io } from "socket.io-client";
 
 const Login = () => {
   const history = useNavigate();
@@ -21,9 +20,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmshowPassword, setConfirmShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
   const toast = useToast();
-  var socket;
   const {
     userData,
     setUserData,
@@ -60,8 +57,7 @@ const Login = () => {
       });
       localStorage.setItem("userInfo", JSON.stringify(data.data));
       setUserData(data.data);
-      socket = io(ENDPOINT);
-      socket.emit("status", data.data);
+
       setLoading(false);
       history("/chats", { hit: true });
     } catch (error) {

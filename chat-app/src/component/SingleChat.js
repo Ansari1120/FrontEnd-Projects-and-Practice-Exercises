@@ -29,7 +29,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
   const [newMessage, setNewMessage] = useState();
-  const [userstatus, setUserStatus] = useState("");
+  const [time, setTime] = useState(3);
+  const [userstatus, setUserStatus] = useState({});
   const {
     userData,
     setSelectedChat,
@@ -143,7 +144,98 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       }
     }, timerLength);
   };
+  function formatTimestamp(timestamp) {
+    const seen = "last seen";
+    const date = new Date(timestamp);
+    const now = new Date();
 
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    const sameDay =
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
+    const yesterday =
+      date.getDate() === now.getDate() - 1 &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
+    const sameWeek = now - date < 7 * 24 * 60 * 60 * 1000;
+    const sameYear = date.getFullYear() === now.getFullYear();
+
+    if (sameDay) {
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      // const ampm = hours >= 12 ? "PM" : "AM";
+      // const formattedHours = hours % 12 || 12;
+      let formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+      formattedMinutes = formattedMinutes - 3;
+
+      let diffMinutes = Math.floor((now - date) / (1000 * 60));
+      if (diffMinutes >= 60) {
+        const diffHours = Math.floor(diffMinutes / 60);
+        const formattedHours = diffHours % 12 || 12;
+        const ampm = diffHours >= 12 ? "PM" : "AM";
+
+        return `${seen} ${formattedHours} hour${
+          formattedHours > 1 ? "s" : ""
+        } ${ampm} ago`;
+      } else {
+        // diffMinutes = diffMinutes - 3;
+        return `${seen} ${diffMinutes + 3} minute${
+          diffMinutes > 1 ? "s" : ""
+        } ago`;
+      }
+      // return `${seen} ${formattedHours}:${formattedMinutes} ${ampm}`;
+    } else if (yesterday) {
+      return `${seen} yesterday`;
+    } else if (sameWeek) {
+      return dayNames[date.getDay()];
+    } else if (sameYear) {
+      return `${seen} ${dayNames[date.getDay()]} ${date.getDate()} ${
+        monthNames[date.getMonth()]
+      }`;
+    } else {
+      return `${seen} ${dayNames[date.getDay()]} ${date.getDate()} ${
+        monthNames[date.getMonth()]
+      } ${date.getFullYear()}`;
+    }
+  }
+
+  const handleUsers = (users) => {
+    if (!users) {
+      console.log("recieved users data from socket is undefined.");
+    }
+    console.log("Users status:", users);
+    if (userData && selectedChat) {
+      const user = users.find(
+        (user) => user.userID === getSenderID(userData._id, selectedChat.users)
+      );
+      console.log("Opposite user status", user);
+      setUserStatus(user);
+    }
+  };
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", userData);
@@ -156,26 +248,69 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // console.log("online", onlineUsers);
   }, []);
 
+  // useEffect(() => {
+  //   // Emit the userData to the server
+  //   socket.emit("status", userData);
+
+  //   // Listen for the "users" event from the server
+  //   socket.on("users", (users) => {
+  //     console.log("Users status:", users);
+
+  //     // if (users) {
+  //     //   // Find the user based on your criteria
+  //     //   const user = users.find(
+  //     //     (user) =>
+  //     //       user.userID === getSenderID(userData._id, selectedChat.users)
+  //     //   );
+
+  //     //   console.log("Opposite user status", user);
+  //     //   setUserStatus(user); // Assuming setUserStatus is a function that updates the user status in the UI
+  //     // }
+  //   });
+  // }, [selectedChat]);
+
   useEffect(() => {
-    // Emit the userData to the server
+    // Define the function to be triggered
+    const triggerFunction = () => {
+      console.log("3 minutes have passed");
+
+      // // Add any other logic you want to execute after 3 minutes
+      // socket.on("manualStatusUpdate", (users) => {
+      //   setUserStatus({
+      //     status: "offline",
+      //     lastSeen: new Date().toLocaleString(),
+      //     userID: updatedUserData._id,
+      //   });
+      // });
+      socket.emit("manualStatusUpdate", userData);
+      socket.on("users", handleUsers);
+    };
+
+    // Set the timeout for 3 minutes (3 * 60 * 1000 milliseconds)
+    const timer = setTimeout(triggerFunction, 2 * 60 * 1000);
+
+    // Clear the timeout if the component unmounts
+    return () => {
+      clearTimeout(timer);
+      socket.off("users", handleUsers);
+    };
+  }, []);
+
+  useEffect(() => {
+    // if (!socket) {
+    //   setSocket(io(ENDPOINT));
+    //   console.log("Socket initialized:", socket);
+    // }
     socket.emit("status", userData);
 
-    // Listen for the "users" event from the server
-    socket.on("users", (users) => {
-      console.log("Users status:", users);
+    socket.on("users", handleUsers);
 
-      // if (users) {
-      //   // Find the user based on your criteria
-      //   const user = users.find(
-      //     (user) =>
-      //       user.userID === getSenderID(userData._id, selectedChat.users)
-      //   );
-
-      //   console.log("Opposite user status", user);
-      //   setUserStatus(user); // Assuming setUserStatus is a function that updates the user status in the UI
-      // }
-    });
+    // Cleanup function to remove listeners on unmount
+    return () => {
+      socket.off("users", handleUsers);
+    };
   }, [selectedChat]);
+
   useEffect(() => {
     fetchMessages();
     selectedChatCompare = selectedChat;
@@ -212,8 +347,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         <>
           <Text
             fontSize={{ base: "28px", md: "30px" }}
-            paddingBottom={3}
-            paddingX={2}
+            // paddingBottom={3}
+            // paddingX={2}
             width={"100%"}
             fontFamily={"Work sans"}
             display={"flex"}
@@ -238,20 +373,24 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               />
             )}
           </Text>
-          <Text
-            fontWeight={"bold"}
-            color="green"
-            fontSize={{ base: "18px", md: "15px" }}
-            // paddingBottom={3}
-            // paddingX={2}
-            width={"100%"}
-            fontFamily={"Work sans"}
-            display={"flex"}
-            justifyContent={{ base: "space-between" }}
-            alignItems={"center"}
-          >
-            {userstatus.status === "online" ? "online" : userstatus.lastSeen}
-          </Text>
+          {userstatus && (
+            <Text
+              fontWeight={"bold"}
+              color="green"
+              fontSize={{ base: "18px", md: "15px" }}
+              // paddingBottom={3}
+              // paddingX={2}
+              width={"100%"}
+              fontFamily={"Work sans"}
+              display={"flex"}
+              justifyContent={{ base: "space-between" }}
+              alignItems={"center"}
+            >
+              {userstatus?.status === "online"
+                ? "online"
+                : formatTimestamp(userstatus?.lastSeen)}
+            </Text>
+          )}
           <Box
             display={"flex"}
             flexDirection={"column"}
