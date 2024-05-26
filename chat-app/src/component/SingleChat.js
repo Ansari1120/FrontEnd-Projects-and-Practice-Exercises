@@ -18,6 +18,7 @@ import ScrollableChat from "./ScrollableChat";
 import { io } from "socket.io-client";
 import animtionData from "../animation/typing.gif";
 import Lottie from "react-lottie";
+import UploadFiles from "./uploadFiles";
 
 const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
 var socket, selectedChatCompare;
@@ -31,6 +32,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [newMessage, setNewMessage] = useState();
   const [time, setTime] = useState(3);
   const [userstatus, setUserStatus] = useState({});
+  const [assetUrl, setAssetUrl] = useState();
+
   const {
     userData,
     setSelectedChat,
@@ -82,8 +85,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
   console.log(messages);
 
-  const sendMessage = async (event) => {
-    if (event.key === "Enter" && newMessage) {
+  const sendMessage = async (event, noEvent = false, message) => {
+    if ((event.key === "Enter" && newMessage) || (noEvent && message)) {
       socket.emit("stop typing", selectedChat._id);
       console.log("yoo?");
       try {
@@ -102,7 +105,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         const { data } = await axios.post(
           `${process.env.REACT_APP_BACKEND_URL}/api/message`,
           {
-            content: newMessage,
+            content: newMessage || message,
             chatId: selectedChat._id,
           },
           config
@@ -309,7 +312,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     return () => {
       socket.off("users", handleUsers);
     };
-  }, [selectedChat]);
+  }, [selectedChat, messages]);
 
   useEffect(() => {
     fetchMessages();
@@ -422,33 +425,37 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <ScrollableChat messages={messages} />
               </div>
             )}
-            <FormControl onKeyDown={sendMessage} isRequired>
-              {istyping ? (
-                // <Lottie
-                //   options={defaultOptions}
-                //   width={70}
-                //   // height={10}
-                //   style={{ marginBottom: 15, marginLeft: 0 }}
-                // />
-                <img
-                  src={animtionData}
-                  alt="typing"
-                  width="70"
-                  style={{ marginLeft: 5, marginBottom: 10 }}
+            <Box display={"flex"} flexDirection={"row"} gap={5}>
+              <FormControl onKeyDown={sendMessage} isRequired>
+                {istyping ? (
+                  // <Lottie
+                  //   options={defaultOptions}
+                  //   width={70}
+                  //   // height={10}
+                  //   style={{ marginBottom: 15, marginLeft: 0 }}
+                  // />
+                  <img
+                    src={animtionData}
+                    alt="typing"
+                    width="70"
+                    style={{ marginLeft: 5, marginBottom: 10 }}
+                  />
+                ) : // <div>typing</div>
+                null}
+                <Input
+                  width={"100%"}
+                  id="message"
+                  class="chakra-input css-1cjy4zv"
+                  // margin={50}
+                  variant={"filled"}
+                  bg="#E0E0E0"
+                  placeholder="Enter a message"
+                  onChange={typingHandler}
+                  value={newMessage}
                 />
-              ) : // <div>typing</div>
-              null}
-              <Input
-                id="message"
-                class="chakra-input css-1cjy4zv"
-                // margin={50}
-                variant={"filled"}
-                bg="#E0E0E0"
-                placeholder="Enter a message"
-                onChange={typingHandler}
-                value={newMessage}
-              />
-            </FormControl>
+              </FormControl>
+              <UploadFiles onHit={(data) => sendMessage("", true, data)} />
+            </Box>
           </Box>
         </>
       ) : (

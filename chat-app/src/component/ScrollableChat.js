@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import ScrollableFeed from "react-scrollable-feed";
 import { ChatState } from "../context/chatProvider";
 import { isLastMessage, isSameSender, isSameUser } from "../config/constants";
-import { Avatar, Tooltip } from "@chakra-ui/react";
+import { Avatar, Image, Tooltip } from "@chakra-ui/react";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/TextLayer.css";
+import "react-pdf/dist/Page/AnnotationLayer.css";
 
 const ScrollableChat = ({ messages }) => {
   const { userData } = ChatState();
+  const [pageNumber, setPageNumber] = useState(1);
+
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
   return (
     <ScrollableFeed>
       {messages &&
@@ -65,7 +72,39 @@ const ScrollableChat = ({ messages }) => {
                   : 10,
               }}
             >
-              {message.content}
+              {message.content.includes(".jpg") ||
+              message.content.includes(".jpeg") ||
+              message.content.includes(".png") ? (
+                <Image
+                  objectFit={"contain"}
+                  title="asset"
+                  src={message.content}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              ) : message.content.includes(".mp4") ? (
+                <video controls>
+                  <source src={message.content} type={"video/mp4"} />
+                  Your browser does not support the video tag.
+                </video>
+              ) : message.content.includes(".mp3") ? (
+                <audio controls>
+                  <source src={message.content} type={"video/mp4"} />
+                  Your browser does not support the video tag.
+                </audio>
+              ) : message.content.includes(".pdf") ? (
+                <Document
+                  file={message.content}
+                  onLoadSuccess={({ numPages }) => setPageNumber(numPages)}
+                  onLoadError={console.error}
+                >
+                  <Page pageNumber={pageNumber} />
+                </Document>
+              ) : (
+                message.content
+              )}
             </span>
           </div>
         ))}
