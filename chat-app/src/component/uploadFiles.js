@@ -15,8 +15,9 @@ import {
   Image,
   useToast,
   Spinner,
+  Text,
 } from "@chakra-ui/react";
-import { DeleteIcon, PhoneIcon } from "@chakra-ui/icons";
+import { AttachmentIcon, DeleteIcon, PhoneIcon } from "@chakra-ui/icons";
 import { Document, Page, pdfjs } from "react-pdf";
 import { ChatState } from "../context/chatProvider";
 import axios from "axios";
@@ -95,7 +96,9 @@ const UploadFiles = ({ onHit }) => {
   };
   return (
     <Box>
-      <Button onClick={onOpen}>Open Modal</Button>
+      <Button onClick={onOpen}>
+        <AttachmentIcon />
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -122,7 +125,13 @@ const UploadFiles = ({ onHit }) => {
               padding={1}
               onChange={handleFileUpload}
             />
-            <AspectRatio resize={"contain"} maxW="400px" ratio={4 / 3}>
+            <AspectRatio
+              resize={"contain"}
+              maxW="400px"
+              ratio={4 / 3}
+              alignSelf={"center"}
+              objectFit={"contain"}
+            >
               {assetType?.includes("image") ? (
                 <Image
                   src={asset}
@@ -140,18 +149,17 @@ const UploadFiles = ({ onHit }) => {
                   <source src={asset} type={assetType} />
                   Your browser does not support the video tag.
                 </audio>
-              ) : (
-                // <iframe
-                //   title="pdf"
-                //   src={asset}
-                //   style={{ width: "100%", height: "100%" }}
-                // />
+              ) : asset?.includes("pdf") ? (
                 <Document
                   file={rawAsset}
                   onLoadSuccess={({ numPages }) => setPageNumber(numPages)}
                 >
                   <Page pageNumber={pageNumber} />
                 </Document>
+              ) : (
+                <Text colorScheme="black" fontSize={40}>
+                  No file selected
+                </Text>
               )}
             </AspectRatio>
           </ModalBody>
@@ -173,7 +181,7 @@ const UploadFiles = ({ onHit }) => {
                 size="xl"
                 width={5}
                 height={5}
-                mr={3}
+                mX={3}
                 // alignSelf={"center"}
                 // marginTop={40}
               />

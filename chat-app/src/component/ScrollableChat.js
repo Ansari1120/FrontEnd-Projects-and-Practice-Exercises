@@ -1,18 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ScrollableFeed from "react-scrollable-feed";
 import { ChatState } from "../context/chatProvider";
 import { isLastMessage, isSameSender, isSameUser } from "../config/constants";
-import { Avatar, Image, Tooltip } from "@chakra-ui/react";
+import { Avatar, Button, Image, Text, Tooltip } from "@chakra-ui/react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
+import { DownloadIcon } from "@chakra-ui/icons";
+import axios from "axios";
 
 const ScrollableChat = ({ messages }) => {
   const { userData } = ChatState();
   const [pageNumber, setPageNumber] = useState(1);
+  const [pdfUrl, setPdfUrl] = useState("");
 
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+  const handlePdfDownload = async (url) => {
+    try {
+      // const credentials =
+      //   process.env.REACT_APP_CLOUDINARY_API_KEY +
+      //   ":" +
+      //   process.env.REACT_APP_CLOUDINARY_API_SECRET;
+      // const encodedCredentials = btoa(credentials);
 
+      const response = await axios.get(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const pdfUrl = URL.createObjectURL(blob);
+      window.open(pdfUrl, "_blank");
+    } catch (error) {
+      console.error("Error opening PDF:", error);
+    }
+  };
+
+  // useEffect(() => {
+
+  //   fetchPdfUrl();
+  // }, []);
   return (
     <ScrollableFeed>
       {messages &&
@@ -95,13 +123,18 @@ const ScrollableChat = ({ messages }) => {
                   Your browser does not support the video tag.
                 </audio>
               ) : message.content.includes(".pdf") ? (
-                <Document
-                  file={message.content}
-                  onLoadSuccess={({ numPages }) => setPageNumber(numPages)}
-                  onLoadError={console.error}
-                >
-                  <Page pageNumber={pageNumber} />
-                </Document>
+                <Text>
+                  PDF File
+                  <Button
+                    onClick={() => handlePdfDownload(message.content)}
+                    marginLeft={2}
+                    w={5}
+                    h={5}
+                    variant={"ghost"}
+                  >
+                    <DownloadIcon />
+                  </Button>
+                </Text>
               ) : (
                 message.content
               )}

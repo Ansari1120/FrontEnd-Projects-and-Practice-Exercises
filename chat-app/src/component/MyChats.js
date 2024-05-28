@@ -1,13 +1,16 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import { ChatState } from "../context/chatProvider";
-import { Box, Button, Stack, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Image, Stack, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
 import { getSender, getTimeAccordingToCondition } from "../config/constants";
 import GroupChatModal from "./GroupChatModal";
 import { useNavigate } from "react-router-dom";
-
+import pdf from "../assets/pdf.png";
+import video from "../assets/video.png";
+import music from "../assets/music.png";
+import image from "../assets/image.png";
 var selectedChatCompare;
 
 const MyChats = () => {
@@ -157,12 +160,45 @@ const MyChats = () => {
                       >
                         {chat && (
                           <b>
-                            <spn>
-                              {userData._id === chat?.latestMessage?.sender
-                                ? "you : "
-                                : null}
-                            </spn>
-                            {chat?.latestMessage?.content}
+                            <Box display={"flex"} flexDirection={"row"}>
+                              <Box>
+                                <spn>
+                                  {userData._id === chat?.latestMessage?.sender
+                                    ? "you : "
+                                    : null}
+                                </spn>
+                              </Box>
+                              <Box>
+                                {chat?.latestMessage?.content.includes(
+                                  "http"
+                                ) ? (
+                                  <Image
+                                    src={
+                                      chat?.latestMessage?.content.includes(
+                                        "pdf"
+                                      )
+                                        ? pdf
+                                        : chat?.latestMessage?.content.includes(
+                                            "mp3"
+                                          )
+                                        ? music
+                                        : chat?.latestMessage?.content.includes(
+                                            "mp4"
+                                          )
+                                        ? video
+                                        : image
+                                    }
+                                    alt="pdf"
+                                    width={5}
+                                    marginX={1}
+                                    height={5}
+                                    objectFit={"contain"}
+                                  />
+                                ) : (
+                                  chat?.latestMessage?.content
+                                )}
+                              </Box>
+                            </Box>
                           </b>
                         )}
                       </Text>
