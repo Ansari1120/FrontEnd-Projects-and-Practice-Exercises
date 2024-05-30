@@ -88,11 +88,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event, noEvent = false, message) => {
     if (
-      (event.key === "Enter" && newMessage) ||
+      (event?.key === "Enter" && newMessage) ||
       (noEvent && message) ||
       (noEvent && newMessage)
     ) {
-      if (noEvent) {
+      if (!noEvent) {
         socket.emit("stop typing", selectedChat._id);
         console.log("yoo?");
       }
@@ -356,7 +356,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       {selectedChat ? (
         <>
           <Text
-            fontSize={{ base: "28px", md: "30px" }}
+            fontSize={{ base: "14px", md: "30px" }}
             // paddingBottom={3}
             // paddingX={2}
             width={"100%"}

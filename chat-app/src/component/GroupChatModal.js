@@ -135,9 +135,10 @@ const GroupChatModal = ({ children }) => {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent width={{ base: "70%" }}>
           <ModalHeader
-            fontSize={"35px"}
+            marginTop={{ base: 5 }}
+            fontSize={{ base: "24px", md: "35px" }}
             fontFamily={"Work sans"}
             display="flex"
             justifyContent={"center"}
@@ -191,7 +192,11 @@ const GroupChatModal = ({ children }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" onClick={handleSubmit}>
+            <Button
+              // boxSize={{ base: 50 }}
+              colorScheme="blue"
+              onClick={handleSubmit}
+            >
               Create Chat
             </Button>
             {/* <Button variant="ghost">Secondary Action</Button> */}

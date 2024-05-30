@@ -105,7 +105,7 @@ const MyChats = () => {
         alignItems={"center"}
       >
         <Text
-          fontSize={{ base: "28px", md: "19px" }}
+          fontSize={{ base: "18px", md: "19px" }}
           fontFamily={"Work sans"}
           fontWeight={"semibold"}
         >
@@ -114,8 +114,8 @@ const MyChats = () => {
         <GroupChatModal>
           <Button
             display={"flex"}
-            fontSize={{ base: "17px", md: "12px", lg: "17px" }}
-            rightIcon={<AddIcon />}
+            fontSize={{ base: "12px", md: "12px", lg: "17px" }}
+            rightIcon={<AddIcon boxSize={{ base: "10px" }} />}
           >
             New Group Chat
           </Button>

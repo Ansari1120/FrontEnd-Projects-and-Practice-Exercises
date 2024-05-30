@@ -18,7 +18,6 @@ import {
   MenuList,
   Text,
   Tooltip,
-  filter,
   useToast,
 } from "@chakra-ui/react";
 import { Spinner } from "@chakra-ui/spinner";
@@ -32,11 +31,9 @@ import ChatLoading from "./ChatLoading";
 import UsersList from "./UsersList";
 import { getSender } from "../config/constants";
 import { io } from "socket.io-client";
+import { socket, ENDPOINT } from "./SideDrawer";
 
-const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
-var socket;
-
-const SideDrawer = () => {
+export const SideDrawer = () => {
   const {
     userData,
     setSelectedChat,
@@ -149,39 +146,33 @@ const SideDrawer = () => {
         alignContent="space-between"
       >
         <Tooltip label="Search Users to Chat" hasArrow placement="right-end">
-          <Button
-            marginX={{ base: -12 }}
-            paddingX={{ base: 12 }}
-            variant="ghost"
-            onClick={onOpen}
-          >
+          <Button variant="ghost" onClick={onOpen}>
             <i className="fas fa-search"></i>
             <Text
               d={{ base: "none", md: "flex" }}
               px="4"
-              fontSize={{ base: 14 }}
+              fontSize={{ base: 12 }}
             >
               Search User
             </Text>
           </Button>
         </Tooltip>
         <Text
-          marginTop={{ base: 1 }}
+          marginTop={{ base: 2 }}
           fontWeight={"semibold"}
           fontSize={{ base: "large", md: "2xl" }}
           fontFamily="Work Sans"
           ml={{ md: "4" }}
-          mr={{ base: "4" }}
         >
           Truss
         </Text>
         <Box>
           <Menu>
             <MenuButton p={1}>
-              <BellIcon fontSize={{ base: "lg", md: "2xl" }} m={1} />
+              <BellIcon fontSize="2xl" m={1} />
               <Badge
                 position={"absolute"}
-                right={{ xl: "8%", md: "11%", sm: "18%", base: "18%" }}
+                right={{ xl: "8%", md: "11%", sm: "22%", base: "23%" }}
                 colorScheme="red"
                 textAlign={"center"}
                 rounded={100}
@@ -194,7 +185,6 @@ const SideDrawer = () => {
               {!notifications.length && "no new messages"}
               {notifications.map((notify) => (
                 <MenuItem
-                  // fontSize={{ base: "12%" }}
                   key={notify._id}
                   onClick={() => {
                     console.log("clickedddd...");
@@ -218,15 +208,9 @@ const SideDrawer = () => {
             </MenuList>
           </Menu>
           <Menu>
-            <MenuButton
-              width={{ base: 10, md: 79 }}
-              as={Button}
-              rightIcon={<ChevronDownIcon />}
-            >
+            <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
               <Avatar
-                width={{ base: 5 }}
-                height={{ base: 5 }}
-                size={"sm"}
+                size="sm"
                 cursor="pointer"
                 name={userData.name}
                 src={userData.profilePicture}
@@ -277,5 +261,3 @@ const SideDrawer = () => {
     </>
   );
 };
-
-export default SideDrawer;

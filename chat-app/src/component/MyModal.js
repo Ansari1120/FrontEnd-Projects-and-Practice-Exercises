@@ -27,7 +27,7 @@ const MyModal = ({ user, children }) => {
       )}
       <Modal size="lg" isCentered={true} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent width={{ base: "90%" }}>
           <Center>
             <ModalHeader>{user.name}</ModalHeader>
           </Center>
@@ -41,14 +41,14 @@ const MyModal = ({ user, children }) => {
             <Center>
               <Image
                 borderRadius={"full"}
-                boxSize={"150px"}
+                boxSize={{ base: "100px", md: "150px" }}
                 src={user.profilePicture}
                 alt={user.name}
               />
             </Center>
 
             <Text
-              fontSize={{ base: "28px", md: "30px" }}
+              fontSize={{ base: "!8px", md: "30px" }}
               fontFamily={"Work sans"}
               textAlign={"center"}
             >
@@ -57,7 +57,13 @@ const MyModal = ({ user, children }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <Button
+              width={{ base: "20%" }}
+              fontSize={{ base: "70%" }}
+              colorScheme="blue"
+              mr={3}
+              onClick={onClose}
+            >
               Close
             </Button>
           </ModalFooter>

@@ -109,20 +109,24 @@ const UploadFiles = ({ onHit }) => {
           margin="0"
           borderRadius="10"
           // width="auto"
-          // width={"70%"}
+          //
+          width={{ base: "60%" }}
         >
-          <ModalHeader>Upload Asset</ModalHeader>
+          <ModalHeader fontSize={{ base: "15px" }}>Upload Asset</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {/* <Lorem count={2} /> */}
-            Choose any file you want to send.
+            <Text fontSize={{ base: "15px" }}>
+              Choose any file you want to send.
+            </Text>
             <Input
               // accept="application/pdf"
               placeholder="Choose a file"
-              size="md"
+              size={{ base: "sm", md: "md" }}
               type="file"
               // marginX={5}
               padding={1}
+              // paddingBottom={{ base: 2 }}
               onChange={handleFileUpload}
             />
             <AspectRatio
@@ -131,6 +135,7 @@ const UploadFiles = ({ onHit }) => {
               ratio={4 / 3}
               alignSelf={"center"}
               objectFit={"contain"}
+              width={{ base: "80%" }}
             >
               {assetType?.includes("image") ? (
                 <Image
@@ -157,7 +162,7 @@ const UploadFiles = ({ onHit }) => {
                   <Page pageNumber={pageNumber} />
                 </Document>
               ) : (
-                <Text colorScheme="black" fontSize={40}>
+                <Text colorScheme="black" fontSize={{ base: 17, md: 40 }}>
                   No file selected
                 </Text>
               )}
@@ -174,19 +179,25 @@ const UploadFiles = ({ onHit }) => {
               }}
               variant="ghost"
             >
-              <DeleteIcon />
+              <DeleteIcon boxSize={{ base: 3 }} />
             </Button>
             {loading ? (
               <Spinner
                 size="xl"
-                width={5}
-                height={5}
+                width={{ base: 3, md: 5 }}
+                height={{ base: 3, md: 5 }}
                 mX={3}
                 // alignSelf={"center"}
                 // marginTop={40}
               />
             ) : (
-              <Button colorScheme="blue" mr={3} onClick={handlePostAsset}>
+              <Button
+                boxSize={{ base: 10 }}
+                fontSize={{ base: 12 }}
+                colorScheme="blue"
+                mr={{ md: 3 }}
+                onClick={handlePostAsset}
+              >
                 Send
               </Button>
             )}
