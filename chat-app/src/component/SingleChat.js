@@ -8,6 +8,7 @@ import {
   FormControl,
   Input,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import MyModal from "./MyModal";
@@ -86,9 +87,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   console.log(messages);
 
   const sendMessage = async (event, noEvent = false, message) => {
-    if ((event.key === "Enter" && newMessage) || (noEvent && message)) {
-      socket.emit("stop typing", selectedChat._id);
-      console.log("yoo?");
+    if (
+      (event.key === "Enter" && newMessage) ||
+      (noEvent && message) ||
+      (noEvent && newMessage)
+    ) {
+      if (noEvent) {
+        socket.emit("stop typing", selectedChat._id);
+        console.log("yoo?");
+      }
       try {
         // const config = {
         //   headers: {
@@ -454,7 +461,27 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                   value={newMessage}
                 />
               </FormControl>
-              <UploadFiles onHit={(data) => sendMessage("", true, data)} />
+              {newMessage ? (
+                <Button onClick={() => sendMessage(null, true, null)}>
+                  <svg
+                    fill="#000000"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25px"
+                    height="50px"
+                    viewBox="0 0 52 52"
+                    enable-background="new 0 0 52 52"
+                    // xml:space="preserve"
+                  >
+                    <path
+                      d="M2.1,44.5l4.4-16.3h18.6c0.5,0,1-0.5,1-1v-2c0-0.5-0.5-1-1-1H6.5l-4.3-16l0,0C2.1,8,2,7.7,2,7.4
+	C2,6.7,2.7,6,3.5,6.1c0.2,0,0.3,0.1,0.5,0.1l0,0l0,0l0,0l45,18.5c0.6,0.2,1,0.8,1,1.4s-0.4,1.1-0.9,1.3l0,0L4,46.4l0,0
+	c-0.2,0.1-0.4,0.1-0.6,0.1C2.6,46.4,2,45.8,2,45C2,44.8,2,44.7,2.1,44.5L2.1,44.5z"
+                    />
+                  </svg>
+                </Button>
+              ) : (
+                <UploadFiles onHit={(data) => sendMessage("", true, data)} />
+              )}
             </Box>
           </Box>
         </>

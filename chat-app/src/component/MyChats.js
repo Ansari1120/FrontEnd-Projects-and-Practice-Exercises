@@ -4,13 +4,18 @@ import { Box, Button, Image, Stack, Text, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
-import { getSender, getTimeAccordingToCondition } from "../config/constants";
+import {
+  getFullSender,
+  getSender,
+  getTimeAccordingToCondition,
+} from "../config/constants";
 import GroupChatModal from "./GroupChatModal";
 import { useNavigate } from "react-router-dom";
 import pdf from "../assets/pdf.png";
 import video from "../assets/video.png";
 import music from "../assets/music.png";
 import image from "../assets/image.png";
+import group from "../assets/group.png";
 var selectedChatCompare;
 
 const MyChats = () => {
@@ -99,7 +104,11 @@ const MyChats = () => {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Text fontSize={{ base: "28px", md: "19px" }} fontFamily={"Work sans"}>
+        <Text
+          fontSize={{ base: "28px", md: "19px" }}
+          fontFamily={"Work sans"}
+          fontWeight={"semibold"}
+        >
           My Chats
         </Text>
         <GroupChatModal>
@@ -144,21 +153,45 @@ const MyChats = () => {
                     flexDirection={"row"}
                     justifyContent={"space-between"}
                     alignItems={"center"}
+                    // gap={4}
                   >
-                    <Box>
-                      {" "}
-                      <Text>
+                    {/* <Box flex={1}> */}
+                    {chat && (
+                      <Image
+                        src={
+                          !chat.isGroupChat
+                            ? getFullSender(userData._id, chat.users)
+                                .profilePicture
+                            : group
+                        }
+                        alt="pdf"
+                        width={7}
+                        // marginRight={-75}
+                        height={7}
+                        objectFit={"contain"}
+                        borderRadius={30}
+                      />
+                    )}
+                    <Box
+                      flex={1}
+                      marginLeft={3}
+                      // marginRight={chat && chat.latestMessage ? 75 : 123}
+                      // alignItems={"center"}
+                      // alignSelf={"flex-start"}
+                    >
+                      <Text noOfLines={1}>
                         {chat && !chat.isGroupChat
                           ? getSender(userData._id, chat.users)
                           : chat.chatName}
                         {/* { chat.chatName} */}
                       </Text>
-                      <Text
-                        fontWeight={"extra-bold"}
-                        fontFamily={"Work sans"}
-                        fontSize={"12px"}
-                      >
-                        {chat && (
+                      {chat && chat?.latestMessage !== null && (
+                        <Text
+                          fontWeight={"extra-bold"}
+                          fontFamily={"Work sans"}
+                          fontSize={"12px"}
+                          textAlign={"flex-start"}
+                        >
                           <b>
                             <Box display={"flex"} flexDirection={"row"}>
                               <Box>
@@ -200,10 +233,12 @@ const MyChats = () => {
                               </Box>
                             </Box>
                           </b>
-                        )}
-                      </Text>
+                        </Text>
+                      )}
                     </Box>
                     <Text
+                      // paddingLeft={19}
+                      // justifyContent={"flex-end"}
                       fontWeight={"extra-bold"}
                       fontFamily={"Work sans"}
                       fontSize={"14px"}
@@ -212,6 +247,7 @@ const MyChats = () => {
                         chat?.latestMessage?.updatedAt
                       )}
                     </Text>
+                    {/* </Box> */}
                   </Box>
                 </Box>
               </Fragment>
