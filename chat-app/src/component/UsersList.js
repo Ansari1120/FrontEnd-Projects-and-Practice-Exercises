@@ -30,7 +30,11 @@ const UsersList = ({ key, user, handleAccessUser }) => {
         />
         <Box>
           <Text>{user.name}</Text>
-          <Text fontSize={"12px"}>
+          <Text
+            noOfLines={2}
+            width={{ base: "50%", md: "100%" }}
+            fontSize={"12px"}
+          >
             <span>
               <b>Email : </b>
               {user.email}

@@ -1,4 +1,4 @@
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { BellIcon, ChevronDownIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Badge,
@@ -181,7 +181,7 @@ const SideDrawer = () => {
               <BellIcon fontSize={{ base: "lg", md: "2xl" }} m={1} />
               <Badge
                 position={"absolute"}
-                right={{ xl: "8%", md: "11%", sm: "18%", base: "18%" }}
+                right={{ xl: "8%", md: "11%", sm: "18%", base: "20%" }}
                 colorScheme="red"
                 textAlign={"center"}
                 rounded={100}
@@ -246,7 +246,16 @@ const SideDrawer = () => {
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader borderBottomWidth={"1px"}>Search Users</DrawerHeader>
+          <DrawerHeader borderBottomWidth={"1px"}>
+            Search Users
+            <span>
+              <CloseIcon
+                onClick={onClose}
+                marginLeft={{ base: 100, md: 140 }}
+                boxSize={3}
+              />
+            </span>
+          </DrawerHeader>
           <DrawerBody>
             <Flex pb={2} d="flex">
               <Input
