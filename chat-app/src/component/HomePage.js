@@ -61,6 +61,23 @@ const HomePage = () => {
           </TabPanels>
         </Tabs>
       </Box>
+
+      <Text
+        backgroundColor={"rgba(0,0,0,0.5)"}
+        borderRadius={"100px"}
+        margin={"5px"}
+        padding={"5px"}
+        maxWidth={"90%"}
+        // paddingLeft={"5px"}
+        // paddingRight={"5px"}
+        fontWeight={"bold"}
+        fontSize="medium"
+        fontFamily="monospace"
+        color="white"
+        textAlign="center"
+      >
+        Designed and Developed Designed by Ahmed Ali Ansari
+      </Text>
     </Container>
   );
 };
